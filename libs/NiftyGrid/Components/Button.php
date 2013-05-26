@@ -227,13 +227,29 @@ class Button extends \Nette\Application\UI\PresenterComponent
 			return false;
 		}
 
+    switch ($this->getClass($row)) {
+        case 'edit':
+            $text = '>'; break;                    
+        case 'delete':
+            $text = 'Â'; break;
+        case 'publish':
+            $text = 'i'; break;
+        case 'unpublish':
+            $text = 'j'; break;
+        case 'detail':
+            $text = 'z'; break;
+        default:
+            $text = '';
+    }            
+
 		$el = Html::el("a")
 			->href($this->getLink($row))
 			->setText($this->getText($row))
 			->addClass("grid-button")
 			->addClass($this->getClass($row))
 			->setTitle($this->getLabel($row))
-			->setTarget($this->getTarget($row));
+			->setTarget($this->getTarget($row))
+      ->setText($text);
 
 		if($this->getName() == Grid::ROW_FORM) {
 			$el->addClass("grid-editable");
