@@ -79,7 +79,7 @@ abstract class Grid extends \Nette\Application\UI\Control
 	protected $templatePath;
 
 	/** @var string */
-	public $messageNoRecords = 'Žádné záznamy';
+	public $messageNoRecords = 'Nothing to display';
 
 	/** @var \Nette\Localization\ITranslator */
 	protected $translator;
@@ -363,10 +363,10 @@ abstract class Grid extends \Nette\Application\UI\Control
 	/**
 	 * @param DataSource\IDataSource $dataSource
 	 */
-	protected function setDataSource(DataSource\IDataSource $dataSource)
+	protected function setDataSource(DataSource\IDataSource $dataSource, $id = null)
 	{
 		$this->dataSource = $dataSource;
-		$this->primaryKey = $this->dataSource->getPrimaryKey();
+		$this->primaryKey = $id === null ? $this->dataSource->getPrimaryKey() : $id;
 	}
 
 	/**
@@ -737,12 +737,13 @@ abstract class Grid extends \Nette\Application\UI\Control
 		$form->addContainer($this->name);
 
 		$form[$this->name]->addContainer("rowForm");
-		$form[$this->name]['rowForm']->addSubmit("send","Uložit");
+		$form[$this->name]['rowForm']->addSubmit("send","save");
 		$form[$this->name]['rowForm']['send']->getControlPrototype()->addClass("grid-editable");
 
 		$form[$this->name]->addContainer("filter");
-		$form[$this->name]['filter']->addSubmit("send","Filtrovat")
-			->setValidationScope(FALSE);
+		$form[$this->name]['filter']->addSubmit("send","Apply filter")
+			->setValidationScope(FALSE)
+                        ->getControlPrototype()->class = "inline";
 
 		$form[$this->name]->addContainer("action");
 		$form[$this->name]['action']->addSelect("action_name","Označené:");
@@ -913,6 +914,7 @@ abstract class Grid extends \Nette\Application\UI\Control
 	{
 		$count = $this->getCount();
 		$this->getPaginator()->itemCount = $count;
+                $this->template->setTranslator($this->presenter->translator);
 		$this->template->results = $count;
 		$this->template->columns = $this['columns']->components;
 		$this->template->buttons = $this['buttons']->components;
@@ -946,7 +948,7 @@ abstract class Grid extends \Nette\Application\UI\Control
 			$this->template->viewedFrom = ((($this->getPaginator()->getPage()-1)*$this->perPage)+1);
 			$this->template->viewedTo = ($this->getPaginator()->getLength()+(($this->getPaginator()->getPage()-1)*$this->perPage));
 		}
-		$templatePath = !empty($this->templatePath) ? $this->templatePath : __DIR__."/../../templates/grid.latte";
+		$templatePath = !empty($this->templatePath) ? $this->templatePath : __DIR__."/../../app/templates/grid.latte";
 
 		if ($this->getTranslator() instanceof \Nette\Localization\ITranslator) {
 			$this->template->setTranslator($this->getTranslator());

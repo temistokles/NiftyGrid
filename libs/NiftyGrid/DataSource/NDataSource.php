@@ -13,7 +13,7 @@ use NiftyGrid\FilterCondition;
 
 class NDataSource implements IDataSource
 {
-	private $table;
+	protected $table;
 
 	public function __construct($table)
 	{
