@@ -124,6 +124,13 @@
 		{/if}
 	</tbody>
 	<tfoot>
+		<tr class="grid-panel" n:if="$control->hasBottomGlobalButtons()">
+			<th colspan="{$colsCount}">
+                                {foreach $bottomGlobalButtons as $globalButton}
+                                        {control $globalButton}
+                                {/foreach}
+			</th>
+		</tr>
 		<tr n:if="$paginate" class="grid-panel">
 			<td colspan="{$colsCount}">
 				{control paginator}

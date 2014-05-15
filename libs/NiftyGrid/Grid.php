@@ -95,6 +95,7 @@ abstract class Grid extends \Nette\Application\UI\Control
 		$this->addComponent(New \Nette\ComponentModel\Container(), "columns");
 		$this->addComponent(New \Nette\ComponentModel\Container(), "buttons");
 		$this->addComponent(New \Nette\ComponentModel\Container(), "globalButtons");
+		$this->addComponent(New \Nette\ComponentModel\Container(), "bottomGlobalButtons");
 		$this->addComponent(New \Nette\ComponentModel\Container(), "actions");
 		$this->addComponent(New \Nette\ComponentModel\Container(), "subGrids");
 
@@ -269,12 +270,13 @@ abstract class Grid extends \Nette\Application\UI\Control
 	 * @throws DuplicateGlobalButtonException
 	 * @return Components\GlobalButton
 	 */
-	public function addGlobalButton($name, $label = NULL)
+	public function addGlobalButton($name, $label = NULL, $bottom = false)
 	{
-		if(!empty($this['globalButtons']->components[$name])){
+		if(!empty($this['globalButtons']->components[$name]) || !empty($this['bottomGlobalButtons']->components[$name])){
 			throw new DuplicateGlobalButtonException("Global button $name already exists.");
 		}
-		$globalButton = new Components\GlobalButton($this['globalButtons'], $name);
+		$globalButton = new Components\GlobalButton($bottom ? $this['bottomGlobalButtons'] : $this['globalButtons'],
+                                                            $name);
 		if($name == self::ADD_ROW){
 			$globalButton->setLink($this->link("addRow!"));
 		}
@@ -428,6 +430,14 @@ abstract class Grid extends \Nette\Application\UI\Control
 	public function hasGlobalButtons()
 	{
 		return count($this['globalButtons']->components) ? TRUE : FALSE;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasBottomGlobalButtons()
+	{
+		return count($this['bottomGlobalButtons']->components) ? TRUE : FALSE;
 	}
 
 	/**
@@ -919,6 +929,7 @@ abstract class Grid extends \Nette\Application\UI\Control
 		$this->template->columns = $this['columns']->components;
 		$this->template->buttons = $this['buttons']->components;
 		$this->template->globalButtons = $this['globalButtons']->components;
+		$this->template->bottomGlobalButtons = $this['bottomGlobalButtons']->components;
 		$this->template->subGrids = $this['subGrids']->components;
 		$this->template->paginate = $this->paginate;
 		$this->template->colsCount = $this->getColsCount();
@@ -948,7 +959,7 @@ abstract class Grid extends \Nette\Application\UI\Control
 			$this->template->viewedFrom = ((($this->getPaginator()->getPage()-1)*$this->perPage)+1);
 			$this->template->viewedTo = ($this->getPaginator()->getLength()+(($this->getPaginator()->getPage()-1)*$this->perPage));
 		}
-		$templatePath = !empty($this->templatePath) ? $this->templatePath : __DIR__."/../../templates/grid.latte";
+		$templatePath = !empty($this->templatePath) ? $this->templatePath : __DIR__."/../../app/templates/grid.latte";
 
 		if ($this->getTranslator() instanceof \Nette\Localization\ITranslator) {
 			$this->template->setTranslator($this->getTranslator());

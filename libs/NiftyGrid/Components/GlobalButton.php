@@ -18,6 +18,9 @@ class GlobalButton extends \Nette\Application\UI\PresenterComponent
 	private $label;
 
 	/** @var string */
+	private $html;
+
+	/** @var string */
 	private $class;
 
 	/** @var callback|string */
@@ -36,6 +39,12 @@ class GlobalButton extends \Nette\Application\UI\PresenterComponent
 
 		return $this;
 	}
+
+        public function setHtml($html) {
+		$this->html = $html;
+
+		return $this;
+        }
 
 	/**
 	 * @param callback|string $class
@@ -88,7 +97,8 @@ class GlobalButton extends \Nette\Application\UI\PresenterComponent
 			->setClass($this->class)
 			->addClass("grid-button")
 			->addClass("grid-global-button")
-			->setTitle($this->label);
+			->setTitle($this->label)
+                        ->setHtml($this->html);
 
 		if($this->getName() == Grid::ADD_ROW) {
 			$el->addClass("grid-add-row");
